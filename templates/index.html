@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detector de Fake News</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f5f6fa;
+    }
+    .form-container {
+      max-width: 700px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 35px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    .form-title {
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .resultado {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #e8f0fe;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2 class="form-title">Sistema de Detección de Fake News 🕵️‍♀️</h2>
+    <p class="text-center text-muted mb-4">
+      Ingrese los detalles de una noticia para su análisis automático.
+    </p>
+
+    <!-- Formulario -->
+    <div>
+      <div class="mb-3">
+        <label for="titulo" class="form-label">📰 Título</label>
+        <input type="text" class="form-control" id="titulo" placeholder="Ej: Anuncian vacuna milagrosa..." required />
+      </div>
+
+      <div class="mb-3">
+        <label for="contenido" class="form-label">📄 Contenido</label>
+        <textarea class="form-control" id="contenido" rows="7" placeholder="Pega aquí el cuerpo completo de la noticia..." required></textarea>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="fecha" class="form-label">📅 Fecha</label>
+          <input type="text" class="form-control" id="fecha" placeholder="Ej: 01-08-2025" required />
+        </div>
+        <div class="col-md-6">
+          <label for="autor" class="form-label">✍️ Autor</label>
+          <input type="text" class="form-control" id="autor" placeholder="Ej: Agencia X, Juan Pérez..." required />
+        </div>
+      </div>
+
+      <div class="d-grid">
+        <button class="btn btn-primary" onclick="enviarNoticia()">🔍 Analizar</button>
+      </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="resultado mt-4" id="resultado">
+      <h3 class="text-center">Resultados</h3>
+      <p class="text-center text-muted">Aquí aparecerán los resultados del análisis.</p>
+    </div>
+  </div>
+
+  <script>
+    async function enviarNoticia() {
+      const noticia = {
+        titulo: document.getElementById("titulo").value,
+        autor: document.getElementById("autor").value,
+        fecha: document.getElementById("fecha").value,
+        contenido: document.getElementById("contenido").value
+      };
+
+      const response = await fetch('/predecir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(noticia)
+      });
+
+      const data = await response.json();
+      document.getElementById("resultado").innerHTML = `
+        <h3 class="text-center">Resultado</h3>
+        <p><strong>Clasificación:</strong> ${data.etiqueta}</p>
+        <p><strong>Probabilidad de ser verdadera:</strong> ${data.probabilidad}</p>
+        <p><strong>Emotividad:</strong> ${data.emotividad} (${data.emocion})</p>
+        <p><strong>Coincidencias título-contenido:</strong> ${data.coincidencias_titulo_contenido}</p>
+        <p><strong>Longitud del contenido:</strong> ${data.longitud} palabras</p>
+        <p><strong>Exclamaciones:</strong> ${data.exclamaciones}</p>
+        ${data.autor_desconocido ? '<p class="text-danger">⚠️ Autor desconocido</p>' : ''}
+      `;
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

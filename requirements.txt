@@ -1,0 +1,12 @@
+# Dependencias del prototipo Flask original. Versiones parcialmente fijadas
+# según el entorno Windows/Python 3.12 usado por el equipo.
+Flask
+pandas
+numpy
+scikit-learn
+joblib
+torch
+tensorflow==2.19.0
+transformers==4.51.3
+spacy
+nltk
